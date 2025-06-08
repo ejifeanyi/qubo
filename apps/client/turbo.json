@@ -1,0 +1,12 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build": {
+			"env": ["NEXT_PUBLIC_API_URL"],
+			"outputs": [".next/**", "!.next/cache/**"]
+		},
+		"dev": {
+			"env": ["NEXT_PUBLIC_API_URL"]
+		}
+	}
+}

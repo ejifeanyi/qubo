@@ -1,0 +1,40 @@
+{
+	"$schema": "https://turborepo.com/schema.json",
+	"ui": "tui",
+	"globalEnv": [
+		"DATABASE_URL",
+		"DIRECT_URL",
+		"GOOGLE_CLIENT_ID",
+		"GOOGLE_CLIENT_SECRET",
+		"GOOGLE_REDIRECT_URI",
+		"JWT_SECRET"
+	],
+	"tasks": {
+		"build": {
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"dependsOn": ["^build"],
+			"outputs": [
+				"build/**",
+				".vercel/**",
+				"dist/**",
+				".next/**",
+				"!.next/cache/**"
+			]
+		},
+		"test": {
+			"outputs": ["coverage/**"],
+			"dependsOn": []
+		},
+		"lint": {
+			"dependsOn": ["^build", "^lint"]
+		},
+		"check-types": {
+			"dependsOn": ["^build", "^check-types"]
+		},
+		"dev": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true
+		}
+	}
+}

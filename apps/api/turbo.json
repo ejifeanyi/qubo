@@ -1,0 +1,23 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build": {
+			"env": [
+				"PORT",
+				"JWT_SECRET",
+				"GOOGLE_CLIENT_ID",
+				"GOOGLE_CLIENT_SECRET",
+				"GOOGLE_REDIRECT_URI"
+			],
+			"outputs": ["dist/**"]
+		},
+		"dev": {
+			"env": [
+				"JWT_SECRET",
+				"GOOGLE_CLIENT_ID",
+				"GOOGLE_CLIENT_SECRET",
+				"GOOGLE_REDIRECT_URI"
+			]
+		}
+	}
+}
