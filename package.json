@@ -1,21 +1,27 @@
 {
-  "name": "kitchen-sink",
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "clean": "turbo run clean",
-    "dev": "turbo run dev",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
-    "check-types": "turbo run check-types"
-  },
-  "devDependencies": {
-    "prettier": "^3.5.3",
-    "turbo": "^2.5.4"
-  },
-  "packageManager": "pnpm@8.15.6",
-  "engines": {
-    "node": ">=18"
-  }
+	"name": "qubo",
+	"version": "1.0.0",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+		"dev": "turbo run dev",
+		"dev:server": "npm run dev --workspace=server",
+		"dev:web": "npm run dev --workspace=web",
+		"build": "npm run build --workspace=server && npm run build --workspace=web",
+		"start": "npm run start --workspace=server",
+		"type-check": "npm run type-check --workspace=server && npm run type-check --workspace=web"
+	},
+	"devDependencies": {
+		"@types/node": "^20.11.17",
+		"typescript": "^5.3.3",
+		"prettier": "^3.5.3",
+		"turbo": "^2.5.4"
+	},
+	"packageManager": "pnpm@8.15.6",
+	"engines": {
+		"node": ">=18"
+	}
 }

@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  googleId      String?   @unique
+  accessToken   String?
+  refreshToken  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  emails        Email[]
+  categories    Category[]
+  
+  @@map("users")
+}
+
+model Email {
+  id          String   @id @default(cuid())
+  messageId   String   @unique
+  subject     String
+  from        String
+  to          String
+  body        String?
+  snippet     String?
+  isRead      Boolean  @default(false)
+  isStarred   Boolean  @default(false)
+  receivedAt  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  @@map("emails")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  color       String   @default("#6366f1")
+  description String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  emails      Email[]
+  
+  @@unique([userId, name])
+  @@map("categories")
+}
