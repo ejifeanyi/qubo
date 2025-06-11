@@ -14,8 +14,12 @@ model User {
   name          String?
   image         String?
   googleId      String?   @unique
-  accessToken   String?
-  refreshToken  String?
+  accessToken   String?   
+  refreshToken  String?   
+  tokenExpiry   DateTime?
+  historyId     String?  
+  lastSyncAt    DateTime?
+  syncInProgress Boolean  @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
@@ -28,14 +32,21 @@ model User {
 model Email {
   id          String   @id @default(cuid())
   messageId   String   @unique
+  threadId    String?
   subject     String
   from        String
   to          String
+  cc          String?
+  bcc         String?
   body        String?
+  bodyText    String?
   snippet     String?
   isRead      Boolean  @default(false)
   isStarred   Boolean  @default(false)
+  labels      String[] 
+  attachments Json?   
   receivedAt  DateTime
+  gmailData   Json?    
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -45,8 +56,11 @@ model Email {
   categoryId  String?
   category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   
+  @@index([userId, receivedAt])
+  @@index([messageId])
   @@map("emails")
 }
+
 
 model Category {
   id          String   @id @default(cuid())

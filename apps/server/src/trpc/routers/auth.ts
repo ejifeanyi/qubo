@@ -2,29 +2,34 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
-import { router, publicProcedure } from "../index";
+import { router, publicProcedure, protectedProcedure } from "../index";
+import { GmailService } from "../../services/gmailService";
 
 const googleClient = new OAuth2Client(
 	process.env.GOOGLE_CLIENT_ID,
 	process.env.GOOGLE_CLIENT_SECRET
 );
 
+const gmailService = new GmailService();
+
 export const authRouter = router({
-	googleLogin: publicProcedure
-		.input(
-			z.object({
-				token: z.string(),
-			})
-		)
+	getGoogleAuthUrl: publicProcedure.query(() => {
+		return { url: gmailService.getAuthUrl() };
+	}),
+
+	handleGoogleCallback: publicProcedure
+		.input(z.object({ code: z.string() }))
 		.mutation(async ({ input, ctx }) => {
 			try {
+				const tokens = await gmailService.getTokens(input.code);
+
 				const ticket = await googleClient.verifyIdToken({
-					idToken: input.token,
+					idToken: tokens.id_token!,
 					audience: process.env.GOOGLE_CLIENT_ID,
 				});
 
 				const payload = ticket.getPayload();
-				if (!payload) {
+				if (!payload?.email) {
 					throw new TRPCError({
 						code: "BAD_REQUEST",
 						message: "Invalid token",
@@ -32,13 +37,6 @@ export const authRouter = router({
 				}
 
 				const { sub: googleId, email, name, picture } = payload;
-
-				if (!email) {
-					throw new TRPCError({
-						code: "BAD_REQUEST",
-						message: "Email required",
-					});
-				}
 
 				let user = await ctx.prisma.user.findUnique({
 					where: { email },
@@ -54,7 +52,6 @@ export const authRouter = router({
 						},
 					});
 
-					// Create default categories
 					await ctx.prisma.category.createMany({
 						data: [
 							{
@@ -85,6 +82,8 @@ export const authRouter = router({
 					});
 				}
 
+				await gmailService.storeTokens(user.id, tokens);
+
 				const jwtToken = jwt.sign(
 					{ userId: user.id },
 					process.env.JWT_SECRET!,
@@ -108,10 +107,7 @@ export const authRouter = router({
 			}
 		}),
 
-	me: publicProcedure.query(async ({ ctx }) => {
-		if (!ctx.user) {
-			return null;
-		}
+	me: protectedProcedure.query(async ({ ctx }) => {
 		return ctx.user;
 	}),
 });

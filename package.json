@@ -8,7 +8,7 @@
 	],
 	"scripts": {
 		"dev": "turbo run dev",
-		"dev:server": "npm run dev --workspace=server",
+		"dev:server": "npm run dev --workspace=server && npm run start --workspace=server",
 		"dev:web": "npm run dev --workspace=web",
 		"build": "npm run build --workspace=server && npm run build --workspace=web",
 		"start": "npm run start --workspace=server",

@@ -14,10 +14,12 @@
 		"@trpc/client": "^10.45.0",
 		"@trpc/react-query": "^10.45.0",
 		"@trpc/server": "^10.45.0",
-		"next-auth": "^4.0.0",
+		"lucide-react": "^0.514.0",
 		"next": "15.3.3",
+		"next-auth": "^4.0.0",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
+		"react-intersection-observer": "^9.16.0",
 		"zod": "^3.0.0"
 	},
 	"devDependencies": {
